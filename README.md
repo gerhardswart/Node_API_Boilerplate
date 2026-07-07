@@ -1,4 +1,5 @@
-# Node.js REST API Template
+# Node.js REST API Boilerplate
+
 
 A production-ready, modern REST API template built with Node.js, Express, and JWT authentication. This template follows industry best practices and provides a solid foundation for building scalable web applications.
 
