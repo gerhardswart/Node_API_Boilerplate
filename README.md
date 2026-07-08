@@ -1,6 +1,5 @@
 # Node.js REST API Boilerplate
 
-
 A production-ready, modern REST API template built with Node.js, Express, and JWT authentication. This template follows industry best practices and provides a solid foundation for building scalable web applications.
 
 ## Features
@@ -12,7 +11,7 @@ A production-ready, modern REST API template built with Node.js, Express, and JW
 - **Centralized Error Handling** - Consistent error responses across all endpoints
 - **Repository Pattern** - Clean separation of data access logic
 - **Service Layer** - Business logic isolated from controllers
-- **Row Level Security** - Database-level security with Supabase/PostgreSQL
+- **Generic Database Layer** - Abstract database interface supporting PostgreSQL, MySQL, MongoDB, or in-memory storage
 - **Structured Logging** - Winston logger with environment-specific configuration
 - **API Versioning** - Built-in support for API versioning (/api/v1)
 - **Request Tracing** - Unique request IDs for debugging and monitoring
@@ -28,7 +27,7 @@ A production-ready, modern REST API template built with Node.js, Express, and JW
 | ---------------- | --------------------- |
 | Runtime          | Node.js 20+ (LTS)     |
 | Framework        | Express.js            |
-| Database         | Supabase (PostgreSQL) |
+| Database         | Pluggable (PostgreSQL/MySQL/MongoDB/In-Memory) |
 | Authentication   | JWT (jsonwebtoken)    |
 | Password Hashing | bcrypt                |
 | Validation       | express-validator     |
@@ -46,6 +45,7 @@ A production-ready, modern REST API template built with Node.js, Express, and JW
 - Node.js 20.x or higher
 - npm 10.x or higher
 - Docker (optional)
+- Database (PostgreSQL, MySQL, MongoDB - or use in-memory for development)
 
 ### Quick Start
 
@@ -61,7 +61,6 @@ npm install
 cp .env.example .env
 
 # Edit .env with your configuration
-# The Supabase credentials are pre-configured
 
 # Start the development server
 npm run dev
@@ -86,14 +85,59 @@ docker-compose --profile production up app-prod
 | `PORT`                      | Server port                               | `3000`         |
 | `NODE_ENV`                  | Environment (development/production/test) | `development`  |
 | `JWT_SECRET`                | Secret key for JWT signing                | Required       |
-| `JWT_EXPIRES_IN`            | Access token expiration                   | `1d`           |
+| `JWT_EXPIRES_IN`             | Access token expiration                   | `1d`           |
 | `JWT_REFRESH_EXPIRES_IN`    | Refresh token expiration                  | `7d`           |
 | `BCRYPT_ROUNDS`             | Bcrypt hashing rounds                     | `10`           |
 | `RATE_LIMIT_WINDOW_MS`      | Rate limit window in milliseconds         | `900000`       |
 | `RATE_LIMIT_MAX_REQUESTS`   | Max requests per window                   | `100`          |
-| `SUPABASE_URL`              | Supabase project URL                      | Pre-configured |
-| `SUPABASE_ANON_KEY`         | Supabase anonymous key                    | Pre-configured |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key                 | Pre-configured |
+| `DATABASE_TYPE`             | Database type (postgres/mysql/mongodb/memory) | `memory`   |
+| `DATABASE_URL`              | Database connection URL                   | Optional       |
+
+## Database Configuration
+
+The template uses a generic database interface (`IDatabaseClient`) that can be implemented for any database:
+
+### Using In-Memory (Default)
+
+The default configuration uses an in-memory database for quick development:
+
+```env
+DATABASE_TYPE=memory
+```
+
+### Using PostgreSQL
+
+1. Create a PostgreSQL database
+2. Implement the `IDatabaseClient` interface in `src/config/database.ts`
+3. Set environment variables:
+
+```env
+DATABASE_TYPE=postgres
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+```
+
+### Database Interface
+
+The `IDatabaseClient` interface provides these methods:
+
+```typescript
+interface IDatabaseClient {
+  findAll<T>(table: string, options?: QueryOptions): Promise<IPaginatedResult<T>>;
+  findById<T>(table: string, id: string): Promise<T | null>;
+  findOne<T>(table: string, field: string, value: FilterValue): Promise<T | null>;
+  findMany<T>(table: string, filters?: Filters, options?: QueryOptions): Promise<T[]>;
+  create<T>(table: string, data: Record<string, unknown>): Promise<T>;
+  update<T>(table: string, id: string, data: Record<string, unknown>): Promise<T | null>;
+  delete(table: string, id: string): Promise<boolean>;
+  count(table: string, filters?: Filters): Promise<number>;
+  exists(table: string, id: string): Promise<boolean>;
+}
+```
+
+To implement a custom database:
+
+1. Create a class implementing `IDatabaseClient`
+2. Update `getDatabaseClient()` in `src/config/database.ts` to return your implementation
 
 ## Project Structure
 
@@ -109,54 +153,58 @@ docker-compose --profile production up app-prod
 │   └── API.postman_environment.json
 ├── src/
 │   ├── config/
-│   │   ├── index.js            # App configuration
-│   │   ├── database.js        # Database connection
-│   │   └── logger.js           # Winston logger
+│   │   ├── index.ts            # App configuration
+│   │   ├── database.ts        # Database client interface
+│   │   └── logger.ts          # Winston logger
 │   ├── controllers/
-│   │   ├── AuthController.js   # Authentication endpoints
-│   │   └── HealthController.js # Health check endpoints
+│   │   ├── AuthController.ts   # Authentication endpoints
+│   │   └── HealthController.ts # Health check endpoints
 │   ├── middleware/
-│   │   ├── auth.js             # JWT authentication middleware
-│   │   ├── errorHandler.js    # Error handling middleware
-│   │   ├── rateLimiter.js     # Rate limiting middleware
-│   │   └── validate.js        # Validation middleware
+│   │   ├── auth.ts             # JWT authentication middleware
+│   │   ├── errorHandler.ts    # Error handling middleware
+│   │   ├── rateLimiter.ts     # Rate limiting middleware
+│   │   └── validate.ts        # Validation middleware
 │   ├── models/
-│   │   └── User.js             # User model
+│   │   └── User.ts             # User model
 │   ├── repositories/
-│   │   ├── BaseRepository.js   # Generic CRUD operations
-│   │   └── UserRepository.js   # User-specific operations
+│   │   ├── BaseRepository.ts   # Generic CRUD operations
+│   │   └── UserRepository.ts   # User-specific operations
 │   ├── routes/
-│   │   ├── index.js            # Route aggregator
-│   │   ├── auth.route.js       # Auth routes
-│   │   └── health.route.js     # Health routes
+│   │   ├── index.ts            # Route aggregator
+│   │   ├── auth.route.ts       # Auth routes
+│   │   └── health.route.ts     # Health routes
 │   ├── services/
-│   │   └── UserService.js      # Business logic
+│   │   └── UserService.ts      # Business logic
 │   ├── tests/
-│   │   ├── setup.js            # Test setup and utilities
-│   │   ├── auth.test.js       # Auth endpoint tests
-│   │   ├── health.test.js     # Health check tests
-│   │   └── errorHandling.test.js
+│   │   ├── setup.ts            # Test setup and utilities
+│   │   ├── auth.test.ts       # Auth endpoint tests
+│   │   ├── health.test.ts     # Health check tests
+│   │   └── errorHandling.test.ts
+│   ├── types/
+│   │   ├── index.ts            # TypeScript interfaces
+│   │   └── express.d.ts        # Express type augmentation
 │   ├── utils/
-│   │   ├── index.js            # Utils aggregator
-│   │   ├── asyncHandler.js     # Async error wrapper
-│   │   ├── jwt.js              # JWT utilities
-│   │   ├── password.js        # Password utilities
-│   │   ├── requestId.js        # Request ID middleware
-│   │   └── response.js         # Response helpers
+│   │   ├── index.ts            # Utils aggregator
+│   │   ├── asyncHandler.ts     # Async error wrapper
+│   │   ├── jwt.ts              # JWT utilities
+│   │   ├── password.ts        # Password utilities
+│   │   ├── requestId.ts        # Request ID middleware
+│   │   └── response.ts         # Response helpers
 │   ├── validators/
-│   │   └── auth.js             # Auth validation rules
-│   ├── app.js                  # Express app setup
-│   └── server.js               # Server entry point
+│   │   └── auth.ts             # Auth validation rules
+│   ├── app.ts                  # Express app setup
+│   └── server.ts               # Server entry point
 ├── .env.example
 ├── .eslintrc.json
 ├── .gitignore
 ├── .prettierrc.json
 ├── Dockerfile
 ├── docker-compose.yml
-├── jest.config.js
+├── jest.config.ts
 ├── package.json
 ├── README.md
-└── swagger.yaml
+├── swagger.yaml
+└── tsconfig.json
 ```
 
 ## API Endpoints
@@ -288,8 +336,6 @@ npm run test:watch
 npm run test:coverage
 ```
 
-Tests use the pre-configured Supabase instance. The test setup automatically creates and cleans up test data.
-
 ## Code Quality
 
 ```bash
@@ -298,6 +344,9 @@ npm run lint
 
 # Format code with Prettier
 npm run format
+
+# Type check
+npm run typecheck
 ```
 
 Pre-commit hooks automatically lint and format staged files.
@@ -337,7 +386,6 @@ docker-compose down
 - **bcrypt** - Secure password hashing with 10+ rounds
 - **JWT** - Stateless authentication with token expiration
 - **Input Validation** - Request payload validation
-- **Row Level Security** - Database-level access control
 
 ## Health Monitoring
 
@@ -369,15 +417,23 @@ kill -9 <PID>
 
 ### Database Connection Issues
 
-1. Verify `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in `.env`
-2. Check that the database migration has been applied
-3. Verify RLS policies are correctly configured
+1. Verify `DATABASE_URL` in `.env`
+2. Ensure your database is running
+3. Check that the database user has proper permissions
 
 ### JWT Token Invalid
 
 - Verify `JWT_SECRET` matches across all environments
 - Check token expiration
 - Ensure `Authorization: Bearer <token>` header format
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
@@ -387,5 +443,4 @@ This project is licensed under the MIT License.
 
 - Built with Express.js framework
 - Authentication powered by JWT
-- Database managed by Supabase
 - Testing with Jest and Supertest

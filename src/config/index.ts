@@ -18,10 +18,9 @@ const config: IConfig = {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) || 900000,
     maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10) || 100,
   },
-  supabase: {
-    url: process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL,
-    anonKey: process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY,
-    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY,
+  database: {
+    type: (process.env.DATABASE_TYPE as IConfig['database']['type']) || 'memory',
+    url: process.env.DATABASE_URL,
   },
   isDevelopment: process.env.NODE_ENV === 'development',
   isProduction: process.env.NODE_ENV === 'production',

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { successResponse } from '../utils';
-import { getSupabaseClient } from '../config/database';
+import { getDatabaseClient } from '../config/database';
 import packageJson from '../../package.json';
 
 /**
@@ -25,12 +25,8 @@ export const detailedHealthCheck = async (_req: Request, res: Response): Promise
   let dbStatus = 'healthy';
 
   try {
-    const client = getSupabaseClient();
-    const { error } = await client.from('users').select('id').limit(1);
-
-    if (error) {
-      dbStatus = `unhealthy: ${error.message}`;
-    }
+    const client = getDatabaseClient();
+    await client.count('users');
   } catch (error) {
     dbStatus = `unhealthy: ${(error as Error).message}`;
   }

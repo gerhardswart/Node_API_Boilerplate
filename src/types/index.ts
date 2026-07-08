@@ -97,10 +97,9 @@ export interface IConfig {
     windowMs: number;
     maxRequests: number;
   };
-  supabase: {
-    url: string | undefined;
-    anonKey: string | undefined;
-    serviceRoleKey: string | undefined;
+  database: {
+    type: 'postgres' | 'mysql' | 'mongodb' | 'memory';
+    url?: string;
   };
   isDevelopment: boolean;
   isProduction: boolean;

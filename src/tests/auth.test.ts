@@ -1,19 +1,18 @@
 import request from 'supertest';
 import app from '../app';
-import { getSupabaseClient } from '../config/database';
+import { getDatabaseClient, type IDatabaseClient } from '../config/database';
 import { generateAccessToken } from '../utils';
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { IUser } from '../types';
 
 declare global {
   function createTestUser(userData?: { email?: string; password?: string; firstName?: string; lastName?: string; role?: 'user' | 'admin'; isActive?: boolean }): Promise<IUser>;
 }
 
-let supabase: SupabaseClient;
+let db: IDatabaseClient;
 
 describe('Authentication Tests', () => {
   beforeAll(() => {
-    supabase = getSupabaseClient();
+    db = getDatabaseClient();
   });
 
   afterAll(async () => {
@@ -42,7 +41,7 @@ describe('Authentication Tests', () => {
       expect(response.body.data.refreshToken).toBeDefined();
 
       // Cleanup
-      await supabase.from('users').delete().eq('id', response.body.data.user.id);
+      await db.delete('users', response.body.data.user.id);
     });
 
     it('should return validation error for invalid email', async () => {
