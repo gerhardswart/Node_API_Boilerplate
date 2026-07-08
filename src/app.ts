@@ -8,8 +8,14 @@ import { errorHandler, notFoundHandler, apiLimiter } from './middleware';
 import { requestIdMiddleware } from './utils';
 import routes from './routes';
 import logger from './config/logger';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
 
 const app = express();
+const swaggerDocument = YAML.load(path.resolve(__dirname, '..', 'swagger.yaml'));
+
+app.set('strict routing', true);
 
 // Security headers
 app.use(helmet());
@@ -62,6 +68,18 @@ app.get('/health', (_req: Request, res: Response) => {
       uptime: process.uptime(),
     },
   });
+});
+
+// Swagger documentation
+app.get('/api/v1/swagger', (_req: Request, res: Response) => {
+  res.redirect('/api/v1/swagger/');
+});
+app.get('/api/v1/swagger/', (_req: Request, res: Response) => {
+  res.send(swaggerUi.generateHTML(swaggerDocument));
+});
+app.use('/api/v1/swagger/', swaggerUi.serve);
+app.get('/api/v1/swagger.json', (_req: Request, res: Response) => {
+  res.json(swaggerDocument);
 });
 
 // API routes

@@ -25,6 +25,22 @@ describe('Health Check Tests', () => {
     });
   });
 
+  describe('GET /api/v1/swagger', () => {
+    it('should redirect to swagger ui', async () => {
+      const response = await request(app).get('/api/v1/swagger').expect(302);
+
+      expect(response.headers.location).toBe('/api/v1/swagger/');
+    });
+  });
+
+  describe('GET /api/v1/swagger/', () => {
+    it('should serve swagger ui', async () => {
+      const response = await request(app).get('/api/v1/swagger/').expect(200);
+
+      expect(response.text).toContain('Swagger UI');
+    });
+  });
+
   describe('GET /api/v1/health/detailed', () => {
     it('should return detailed health status with database check', async () => {
       const response = await request(app).get('/api/v1/health/detailed').expect(200);
