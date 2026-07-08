@@ -1,7 +1,6 @@
-import 'express';
 import type { IRequestUser } from './index';
 
-declare module 'express' {
+declare module 'express-serve-static-core' {
   interface Request {
     user?: IRequestUser;
     requestId?: string;
