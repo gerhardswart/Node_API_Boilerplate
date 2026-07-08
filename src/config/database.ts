@@ -94,7 +94,7 @@ class InMemoryDatabase implements IDatabaseClient {
     const tableData = this.getTable(table);
     const { page = 1, limit = 10, sort = 'created_at', order = 'desc' } = options;
 
-    let records = Array.from(tableData.values());
+    const records = Array.from(tableData.values());
 
     // Sort
     records.sort((a, b) => {

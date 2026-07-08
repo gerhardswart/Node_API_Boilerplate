@@ -1,7 +1,7 @@
 import BaseRepository from './BaseRepository';
 import type { IDatabaseClient } from '../config/database';
 import { getDatabaseClient } from '../config/database';
-import type { IUser, ILoginResult } from '../types';
+import type { IUser } from '../types';
 
 /**
  * User repository with user-specific operations
