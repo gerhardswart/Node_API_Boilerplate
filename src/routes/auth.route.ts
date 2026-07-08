@@ -1,6 +1,15 @@
 import express from 'express';
 import { authMiddleware, authLimiter } from '../middleware';
-import { register, login, refreshToken, getProfile, updateProfile, changePassword, logout, deactivateAccount } from '../controllers/AuthController';
+import {
+    register,
+    login,
+    refreshToken,
+    getProfile,
+    updateProfile,
+    changePassword,
+    logout,
+    deactivateAccount,
+} from '../controllers/AuthController';
 
 const router = express.Router();
 

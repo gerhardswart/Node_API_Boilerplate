@@ -22,12 +22,12 @@ app.use(helmet());
 
 // CORS configuration
 app.use(
-  cors({
-    origin: config.isDevelopment ? '*' : process.env.CORS_ORIGIN?.split(',') || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
-    credentials: true,
-  })
+    cors({
+        origin: config.isDevelopment ? '*' : process.env.CORS_ORIGIN?.split(',') || '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+        credentials: true,
+    })
 );
 
 // Compression
@@ -42,16 +42,16 @@ app.use(requestIdMiddleware);
 
 // Logging
 if (config.isDevelopment) {
-  app.use(morgan('dev'));
+    app.use(morgan('dev'));
 } else {
-  app.use(
-    morgan('combined', {
-      skip: (_req: Request, res: Response) => res.statusCode < 400,
-      stream: {
-        write: (message: string) => logger.info(message.trim()),
-      },
-    })
-  );
+    app.use(
+        morgan('combined', {
+            skip: (_req: Request, res: Response) => res.statusCode < 400,
+            stream: {
+                write: (message: string) => logger.info(message.trim()),
+            },
+        })
+    );
 }
 
 // Rate limiting for API routes
@@ -59,27 +59,27 @@ app.use('/api', apiLimiter);
 
 // Health check (no auth required)
 app.get('/health', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    message: 'Service is healthy',
-    data: {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-    },
-  });
+    res.json({
+        success: true,
+        message: 'Service is healthy',
+        data: {
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            uptime: process.uptime(),
+        },
+    });
 });
 
 // Swagger documentation
 app.get('/api/v1/swagger', (_req: Request, res: Response) => {
-  res.redirect('/api/v1/swagger/');
+    res.redirect('/api/v1/swagger/');
 });
 app.get('/api/v1/swagger/', (_req: Request, res: Response) => {
-  res.send(swaggerUi.generateHTML(swaggerDocument));
+    res.send(swaggerUi.generateHTML(swaggerDocument));
 });
 app.use('/api/v1/swagger/', swaggerUi.serve);
 app.get('/api/v1/swagger.json', (_req: Request, res: Response) => {
-  res.json(swaggerDocument);
+    res.json(swaggerDocument);
 });
 
 // API routes
@@ -87,14 +87,14 @@ app.use('/api/v1', routes);
 
 // Root endpoint
 app.get('/', (_req: Request, res: Response) => {
-  res.json({
-    success: true,
-    message: 'Welcome to the REST API',
-    data: {
-      documentation: '/api/v1/health',
-      version: '1.0.0',
-    },
-  });
+    res.json({
+        success: true,
+        message: 'Welcome to the REST API',
+        data: {
+            documentation: '/api/v1/health',
+            version: '1.0.0',
+        },
+    });
 });
 
 // 404 handler

@@ -23,20 +23,20 @@ A production-ready, modern REST API template built with Node.js, Express, and JW
 
 ## Tech Stack
 
-| Category         | Technology            |
-| ---------------- | --------------------- |
-| Runtime          | Node.js 20+ (LTS)     |
-| Framework        | Express.js            |
+| Category         | Technology                                     |
+| ---------------- | ---------------------------------------------- |
+| Runtime          | Node.js 20+ (LTS)                              |
+| Framework        | Express.js                                     |
 | Database         | Pluggable (PostgreSQL/MySQL/MongoDB/In-Memory) |
-| Authentication   | JWT (jsonwebtoken)    |
-| Password Hashing | bcrypt                |
-| Validation       | express-validator     |
-| Logging          | Winston + Morgan      |
-| Security         | Helmet + CORS         |
-| Rate Limiting    | express-rate-limit    |
-| Testing          | Jest + Supertest      |
-| Code Quality     | ESLint + Prettier     |
-| Containerization | Docker                |
+| Authentication   | JWT (jsonwebtoken)                             |
+| Password Hashing | bcrypt                                         |
+| Validation       | express-validator                              |
+| Logging          | Winston + Morgan                               |
+| Security         | Helmet + CORS                                  |
+| Rate Limiting    | express-rate-limit                             |
+| Testing          | Jest + Supertest                               |
+| Code Quality     | ESLint + Prettier                              |
+| Containerization | Docker                                         |
 
 ## Installation
 
@@ -80,18 +80,18 @@ docker-compose --profile production up app-prod
 
 ## Environment Variables
 
-| Variable                    | Description                               | Default        |
-| --------------------------- | ----------------------------------------- | -------------- |
-| `PORT`                      | Server port                               | `3000`         |
-| `NODE_ENV`                  | Environment (development/production/test) | `development`  |
-| `JWT_SECRET`                | Secret key for JWT signing                | Required       |
-| `JWT_EXPIRES_IN`             | Access token expiration                   | `1d`           |
-| `JWT_REFRESH_EXPIRES_IN`    | Refresh token expiration                  | `7d`           |
-| `BCRYPT_ROUNDS`             | Bcrypt hashing rounds                     | `10`           |
-| `RATE_LIMIT_WINDOW_MS`      | Rate limit window in milliseconds         | `900000`       |
-| `RATE_LIMIT_MAX_REQUESTS`   | Max requests per window                   | `100`          |
-| `DATABASE_TYPE`             | Database type (postgres/mysql/mongodb/memory) | `memory`   |
-| `DATABASE_URL`              | Database connection URL                   | Optional       |
+| Variable                  | Description                                   | Default       |
+| ------------------------- | --------------------------------------------- | ------------- |
+| `PORT`                    | Server port                                   | `3000`        |
+| `NODE_ENV`                | Environment (development/production/test)     | `development` |
+| `JWT_SECRET`              | Secret key for JWT signing                    | Required      |
+| `JWT_EXPIRES_IN`          | Access token expiration                       | `1d`          |
+| `JWT_REFRESH_EXPIRES_IN`  | Refresh token expiration                      | `7d`          |
+| `BCRYPT_ROUNDS`           | Bcrypt hashing rounds                         | `10`          |
+| `RATE_LIMIT_WINDOW_MS`    | Rate limit window in milliseconds             | `900000`      |
+| `RATE_LIMIT_MAX_REQUESTS` | Max requests per window                       | `100`         |
+| `DATABASE_TYPE`           | Database type (postgres/mysql/mongodb/memory) | `memory`      |
+| `DATABASE_URL`            | Database connection URL                       | Optional      |
 
 ## Database Configuration
 
@@ -122,15 +122,15 @@ The `IDatabaseClient` interface provides these methods:
 
 ```typescript
 interface IDatabaseClient {
-  findAll<T>(table: string, options?: QueryOptions): Promise<IPaginatedResult<T>>;
-  findById<T>(table: string, id: string): Promise<T | null>;
-  findOne<T>(table: string, field: string, value: FilterValue): Promise<T | null>;
-  findMany<T>(table: string, filters?: Filters, options?: QueryOptions): Promise<T[]>;
-  create<T>(table: string, data: Record<string, unknown>): Promise<T>;
-  update<T>(table: string, id: string, data: Record<string, unknown>): Promise<T | null>;
-  delete(table: string, id: string): Promise<boolean>;
-  count(table: string, filters?: Filters): Promise<number>;
-  exists(table: string, id: string): Promise<boolean>;
+    findAll<T>(table: string, options?: QueryOptions): Promise<IPaginatedResult<T>>;
+    findById<T>(table: string, id: string): Promise<T | null>;
+    findOne<T>(table: string, field: string, value: FilterValue): Promise<T | null>;
+    findMany<T>(table: string, filters?: Filters, options?: QueryOptions): Promise<T[]>;
+    create<T>(table: string, data: Record<string, unknown>): Promise<T>;
+    update<T>(table: string, id: string, data: Record<string, unknown>): Promise<T | null>;
+    delete(table: string, id: string): Promise<boolean>;
+    count(table: string, filters?: Filters): Promise<number>;
+    exists(table: string, id: string): Promise<boolean>;
 }
 ```
 
@@ -249,20 +249,20 @@ Response:
 
 ```json
 {
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "user": {
-      "id": "uuid",
-      "email": "john@example.com",
-      "firstName": "John",
-      "lastName": "Doe",
-      "role": "user",
-      "createdAt": "2024-01-15T10:00:00.000Z"
-    },
-    "accessToken": "eyJhbGc...",
-    "refreshToken": "eyJhbGc..."
-  }
+    "success": true,
+    "message": "User registered successfully",
+    "data": {
+        "user": {
+            "id": "uuid",
+            "email": "john@example.com",
+            "firstName": "John",
+            "lastName": "Doe",
+            "role": "user",
+            "createdAt": "2024-01-15T10:00:00.000Z"
+        },
+        "accessToken": "eyJhbGc...",
+        "refreshToken": "eyJhbGc..."
+    }
 }
 ```
 
@@ -300,11 +300,11 @@ All endpoints follow a consistent response format.
 
 ```json
 {
-  "success": true,
-  "message": "Operation successful",
-  "data": {
-    // Response data
-  }
+    "success": true,
+    "message": "Operation successful",
+    "data": {
+        // Response data
+    }
 }
 ```
 
@@ -312,14 +312,14 @@ All endpoints follow a consistent response format.
 
 ```json
 {
-  "success": false,
-  "message": "Error description",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Please provide a valid email address"
-    }
-  ]
+    "success": false,
+    "message": "Error description",
+    "errors": [
+        {
+            "field": "email",
+            "message": "Please provide a valid email address"
+        }
+    ]
 }
 ```
 
